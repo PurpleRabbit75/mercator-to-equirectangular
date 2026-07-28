@@ -43,6 +43,17 @@ PIL_WRITE_SUPPORTED_EXTENSIONS = {
 }
 
 
+# Force a narrow style (important for embedding)
+st.markdown("""
+<style>
+.block-container {
+    max-width: 730px;
+    margin: 0 auto;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # Make a nice litte welcome page
 st.title("Convert Mercator Projection Maps to Equirectangular Projection")
 
@@ -53,7 +64,7 @@ st.write("TL;DR: If your Mercator map is approximately square, chances are you'r
 uploaded_file = st.file_uploader("Upload your Mercator map here...", accept_multiple_files=False, max_upload_size=1000)
 
 # Widget for selecting the export file type (easy, since once you pick the extension, PIL does the rest)
-output_type = st.selectbox("Export As", list(PIL_WRITE_SUPPORTED_EXTENSIONS), index=5)
+output_type = st.selectbox("Export As", list(PIL_WRITE_SUPPORTED_EXTENSIONS), index=4)
 output_MIME="/image/jpeg"
 if output_type is not None:
     output_MIME = PIL_WRITE_SUPPORTED_EXTENSIONS[output_type]
