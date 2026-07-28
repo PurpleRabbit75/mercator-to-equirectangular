@@ -51,7 +51,7 @@ st.write("If your Mercator map is approximately square, chances are you're using
 
 uploaded_file = st.file_uploader("Upload your Mercator map here...", accept_multiple_files=False, max_upload_size=1000)
 
-output_type = st.selectbox("Export As", list(PIL_WRITE_SUPPORTED_EXTENSIONS), index=3)
+output_type = st.selectbox("Export As", list(PIL_WRITE_SUPPORTED_EXTENSIONS), index=5)
 output_MIME="/image/jpeg"
 if output_type is not None:
     output_MIME = PIL_WRITE_SUPPORTED_EXTENSIONS[output_type]
