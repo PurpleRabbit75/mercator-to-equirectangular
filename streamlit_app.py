@@ -1,7 +1,7 @@
 import streamlit as st
 from mercator2equirectangular import mercator_to_equirectangular
 
-
+# Big nasty global of PIL-supported extensions and their MIME types
 PIL_WRITE_SUPPORTED_EXTENSIONS = {
     # Normal ones
     ".bmp": "image/bmp",
@@ -43,42 +43,54 @@ PIL_WRITE_SUPPORTED_EXTENSIONS = {
 }
 
 
-
+# Make a nice litte welcome page
 st.title("Convert Mercator Projection Maps to Equirectangular Projection")
 
-st.write('For best results, use the so-called "Web Mercator" (also called the "Google Mercator" or "Pseudo-Mercator") projection, which projects onto a sphere instead of an ellipsoid and terminates the map at approximately ±85.05°.')
-st.write("If your Mercator map is approximately square, chances are you're using this projection!")
+st.write('For best results, use the so-called "Web Mercator" (also called the "Google Mercator" or "Pseudo-Mercator") projection. This format is characterized by poles truncated at approximately ±85.05°.')
+st.write("TL;DR: If your Mercator map is approximately square, chances are you're using this projection!")
 
+# File-uploader widget for the input map
 uploaded_file = st.file_uploader("Upload your Mercator map here...", accept_multiple_files=False, max_upload_size=1000)
 
+# Widget for selecting the export file type (easy, since once you pick the extension, PIL does the rest)
 output_type = st.selectbox("Export As", list(PIL_WRITE_SUPPORTED_EXTENSIONS), index=5)
 output_MIME="/image/jpeg"
 if output_type is not None:
     output_MIME = PIL_WRITE_SUPPORTED_EXTENSIONS[output_type]
 
+
+# All this stuff appears as soon as someone uploads the file
 if uploaded_file is not None:
 
+    # This whole thing is to prevent directory traversal attacks. I need to preserve the extension of the input file for PIL, but not the rest of it!
     if any("." in i for i in uploaded_file.name.split(".")):
         st.error('Filename cannot include more than one "." character!')
     else:
         extension=uploaded_file.name.split(".")[1]
 
+        # Dump the file locally
         with open(f"./map.{extension}", "wb") as f:
             f.write(uploaded_file.getbuffer())
 
+        # Display it for the user
         st.write("You uploaded this Mercator map:")
         st.image(f"./map.{extension}")
 
+        # Do backend conversion
         output_path = f"converted_map{output_type}"
         mercator_to_equirectangular(f"./map.{extension}", output_path)
 
+        # Display the converted map for the user
         st.write("Here is your converted Equirectangular map:")
         st.image(output_path)
 
+        # Read the converted map into bytes again
         with open(output_path, "rb") as f:
             image_bytes = f.read()
 
+        # Combine bytes, MIME type, and filename into a downloadable file
         st.download_button("Download", image_bytes, file_name=output_path, mime=output_MIME)
 
+        # Bye!
         st.write("Have a nice day!")
 

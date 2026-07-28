@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image
 
 def mercator_to_equirectangular(
+    # Full disclosure: Claude Sonnet 5 wrote this function
     src_path,
     dst_path,
     lat_min=85.051129,   # standard Web Mercator limit
